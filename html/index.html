@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NOTED OPTIMIZER™</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    font-family: 'Arial Black', Impact, sans-serif;
+    background: transparent;
+    pointer-events: none;
+    display: none;
+  }
+  body.visible { display: block; }
+
+  /* RAINBOW SEIZURE BACKGROUND */
+  #bg {
+    position: fixed; inset: 0;
+    background: linear-gradient(45deg, #ff0000, #ff7700, #ffff00, #00ff00, #0000ff, #8b00ff);
+    background-size: 600% 600%;
+    animation: rainbowShift 0.4s linear infinite;
+    opacity: 0.18;
+    z-index: 0;
+  }
+  @keyframes rainbowShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* MAIN BANNER TOP */
+  #banner {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: linear-gradient(90deg, #000 0%, #1a0033 50%, #000 100%);
+    border-bottom: 4px solid;
+    border-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red) 1;
+    padding: 8px 0;
+    text-align: center;
+    z-index: 100;
+    animation: bannerBob 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes bannerBob { from { transform: scaleY(1); } to { transform: scaleY(1.04); } }
+
+  #banner h1 {
+    font-size: 2.4vw;
+    font-weight: 900;
+    letter-spacing: 4px;
+    animation: textRainbow 0.3s linear infinite;
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+  }
+  @keyframes textRainbow {
+    0%   { color: #ff0000; }
+    16%  { color: #ff9900; }
+    33%  { color: #ffff00; }
+    50%  { color: #00ff00; }
+    66%  { color: #00ccff; }
+    83%  { color: #cc00ff; }
+    100% { color: #ff0000; }
+  }
+
+  #banner .sub {
+    font-size: 1vw;
+    color: #ffff00;
+    letter-spacing: 8px;
+    animation: blink 0.5s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* TICKER TAPE */
+  #ticker {
+    position: fixed; top: 68px; left: 0; right: 0;
+    background: #ff0000;
+    color: #ffff00;
+    font-size: 1.1vw;
+    font-weight: 900;
+    padding: 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 100;
+    border-bottom: 2px solid #ffff00;
+  }
+  #ticker-inner {
+    display: inline-block;
+    animation: ticker 18s linear infinite;
+  }
+  @keyframes ticker { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+  /* SIDE PANELS */
+  #left-panel, #right-panel {
+    position: fixed; top: 100px; bottom: 60px;
+    width: 18vw;
+    z-index: 50;
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 10px;
+  }
+  #left-panel { left: 0; }
+  #right-panel { right: 0; }
+
+  .stat-box {
+    background: rgba(0,0,0,0.85);
+    border: 2px solid;
+    border-radius: 6px;
+    padding: 8px 12px;
+    text-align: center;
+    animation: statPulse 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes statPulse { from { border-color: #ff0000; box-shadow: 0 0 8px #ff0000; } to { border-color: #00ff00; box-shadow: 0 0 16px #00ff00; } }
+
+  .stat-box .label { font-size: 0.75vw; color: #aaa; letter-spacing: 2px; text-transform: uppercase; }
+  .stat-box .value { font-size: 1.6vw; font-weight: 900; animation: textRainbow 0.5s linear infinite; }
+
+  /* SCAN BAR */
+  .scan-wrap { background: rgba(0,0,0,0.85); border: 2px solid #00ff00; border-radius: 6px; padding: 8px; }
+  .scan-label { font-size: 0.7vw; color: #00ff00; letter-spacing: 1px; margin-bottom: 4px; }
+  .scan-track { background: #111; border-radius: 3px; height: 10px; overflow: hidden; }
+  .scan-fill { height: 100%; background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000); border-radius: 3px; animation: scanAnim 3s linear infinite; }
+  @keyframes scanAnim { 0% { width: 0%; } 80% { width: 100%; } 81% { width: 0%; } 100% { width: 0%; } }
+
+  /* TESTIMONIALS */
+  #testimonials {
+    position: fixed; right: 19vw; top: 110px;
+    width: 14vw;
+    z-index: 50;
+  }
+  .testi {
+    background: rgba(0,0,20,0.9);
+    border: 2px solid #ff00ff;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 8px;
+    font-size: 0.7vw;
+    color: #fff;
+    animation: testiFloat 3s ease-in-out infinite alternate;
+  }
+  .testi:nth-child(2) { animation-delay: 1s; border-color: #00ffff; }
+  .testi:nth-child(3) { animation-delay: 2s; border-color: #ffff00; }
+  @keyframes testiFloat { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+  .testi .stars { color: #ffff00; font-size: 0.9vw; }
+  .testi .name { color: #aaa; font-size: 0.6vw; margin-top: 3px; }
+
+  /* CENTER LOGO */
+  #center-logo {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 40;
+    pointer-events: none;
+  }
+  #center-logo .logo-text {
+    font-size: 4vw;
+    font-weight: 900;
+    animation: textRainbow 0.25s linear infinite, logoBounce 1s ease-in-out infinite;
+    text-shadow: 0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px currentColor;
+    letter-spacing: 6px;
+  }
+  @keyframes logoBounce {
+    0%,100% { transform: scale(1) rotate(-1deg); }
+    50%      { transform: scale(1.06) rotate(1deg); }
+  }
+  #center-logo .version {
+    font-size: 1.1vw;
+    color: #ffff00;
+    letter-spacing: 12px;
+    animation: blink 0.7s step-end infinite;
+    margin-top: 4px;
+  }
+  #center-logo .certified {
+    margin-top: 10px;
+    display: inline-block;
+    background: #ff0000;
+    color: #fff;
+    font-size: 0.8vw;
+    padding: 4px 16px;
+    border-radius: 4px;
+    letter-spacing: 3px;
+    animation: certSpin 2s linear infinite;
+    border: 2px solid #fff;
+  }
+  @keyframes certSpin { 0% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } 100% { transform: rotate(-2deg); } }
+
+  /* PRICE CALLOUT */
+  #price-box {
+    position: fixed; bottom: 70px; left: 19vw;
+    background: rgba(0,0,0,0.9);
+    border: 3px solid #ffff00;
+    border-radius: 12px;
+    padding: 10px 20px;
+    text-align: center;
+    z-index: 60;
+    animation: pricePop 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes pricePop { from { transform: scale(1) rotate(-1deg); } to { transform: scale(1.05) rotate(1deg); } }
+  #price-box .them { font-size: 0.85vw; color: #ff4444; text-decoration: line-through; letter-spacing: 1px; }
+  #price-box .us   { font-size: 1.8vw; color: #00ff00; font-weight: 900; text-shadow: 0 0 15px #00ff00; }
+  #price-box .fine { font-size: 0.55vw; color: #888; margin-top: 2px; }
+
+  /* AWARDS */
+  #awards {
+    position: fixed; bottom: 70px; right: 19vw;
+    display: flex; gap: 8px;
+    z-index: 60;
+  }
+  .award {
+    background: rgba(0,0,0,0.9);
+    border: 2px solid gold;
+    border-radius: 50%;
+    width: 5vw; height: 5vw;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 0.55vw;
+    color: #ffff00;
+    text-align: center;
+    line-height: 1.2;
+    animation: awardSpin 4s linear infinite;
+  }
+  .award:nth-child(2) { animation-direction: reverse; border-color: #00ffff; color: #00ffff; }
+  .award:nth-child(3) { animation-delay: 1s; border-color: #ff00ff; color: #ff00ff; }
+  @keyframes awardSpin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }
+  .award .emoji { font-size: 1.5vw; }
+
+  /* POPUP AD */
+  #popup {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 4px solid #ff0000;
+    border-radius: 8px;
+    padding: 20px 30px;
+    text-align: center;
+    z-index: 999;
+    min-width: 24vw;
+    box-shadow: 0 0 60px rgba(255,0,0,0.8);
+    display: none;
+  }
+  #popup.show { display: block; animation: popupEntrance 0.3s ease-out; }
+  @keyframes popupEntrance { from { transform: translate(-50%,-50%) scale(0.5); opacity: 0; } to { transform: translate(-50%,-50%) scale(1); opacity: 1; } }
+  #popup h2 { color: #ff0000; font-size: 1.4vw; margin-bottom: 8px; }
+  #popup p  { color: #000; font-size: 0.8vw; margin-bottom: 12px; }
+  #popup .popup-btn {
+    background: linear-gradient(180deg, #ff6600, #cc0000);
+    color: #fff; border: none; border-radius: 6px;
+    padding: 8px 24px; font-size: 0.9vw; font-weight: 900;
+    cursor: pointer; letter-spacing: 2px;
+    animation: btnPulse 0.5s ease-in-out infinite alternate;
+    pointer-events: all;
+  }
+  @keyframes btnPulse { from { box-shadow: 0 0 8px #ff0000; } to { box-shadow: 0 0 24px #ff0000, 0 0 48px #ff6600; } }
+  #popup .dismiss { display: block; margin-top: 6px; font-size: 0.55vw; color: #ccc; cursor: pointer; pointer-events: all; }
+
+  /* BOTTOM BAR */
+  #bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #000;
+    border-top: 3px solid #ff0000;
+    padding: 6px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 100;
+  }
+  #bottom-bar span { font-size: 0.7vw; animation: textRainbow 0.6s linear infinite; letter-spacing: 2px; }
+
+  /* FLOATING STARS */
+  .star {
+    position: fixed;
+    font-size: 1.5vw;
+    animation: starFloat linear infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+  @keyframes starFloat {
+    0%   { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* WARNING FLASH */
+  #warning-flash {
+    position: fixed; inset: 0;
+    background: rgba(255,0,0,0.15);
+    z-index: 200;
+    pointer-events: none;
+    opacity: 0;
+    animation: warnFlash 4s ease-in-out infinite;
+  }
+  @keyframes warnFlash { 0%,85%,100% { opacity: 0; } 90%,95% { opacity: 1; } }
+
+  /* CORNER BADGES */
+  .corner-badge {
+    position: fixed;
+    background: #ff0000;
+    color: #fff;
+    font-size: 0.65vw;
+    font-weight: 900;
+    padding: 4px 10px;
+    z-index: 101;
+    letter-spacing: 2px;
+    animation: blink 0.4s step-end infinite;
+  }
+  #badge-tl { top: 100px; left: 0; border-radius: 0 0 8px 0; }
+  #badge-tr { top: 100px; right: 0; border-radius: 0 0 0 8px; background: #00aa00; }
+  #badge-br { bottom: 60px; right: 0; border-radius: 8px 0 0 8px; background: #aa00aa; }
+</style>
+</head>
+<body id="body">
+
+<div id="bg"></div>
+<div id="warning-flash"></div>
+
+<!-- TOP BANNER -->
+<div id="banner">
+  <h1>⚡ NOTED OPTIMIZER™ ENTRY EDITION ⚡</h1>
+  <div class="sub">★ THE WORLD'S #1 SERVER OPTIMIZATION SOLUTION ★</div>
+</div>
+
+<!-- TICKER -->
+<div id="ticker">
+  <span id="ticker-inner">
+    🔥 DETECTED QUASAR MALWARE ON YOUR SERVER — STAND BY FOR REMOVAL &nbsp;|&nbsp;
+    ✅ 4,201,337 SERVERS PROTECTED WORLDWIDE &nbsp;|&nbsp;
+    💰 OTHER OPTIMIZERS CHARGE $999/MO — NOTED OPTIMIZER IS FREE (DONATIONS APPRECIATED) &nbsp;|&nbsp;
+    ⚠️ YOUR SERVER PERFORMANCE COULD BE UP TO 99,999% BETTER &nbsp;|&nbsp;
+    🏆 WINNER: BEST FIVEM SCRIPT 2019 2020 2021 2022 2023 2024 2025 &nbsp;|&nbsp;
+    🔔 LIMITED TIME OFFER: BUY NOTED OPTIMIZER PRO FOR ONLY $4.99 &nbsp;|&nbsp;
+    💀 QUASAR STORE IS A SCAM. NOTED OPTIMIZER DETECTED IT. &nbsp;|&nbsp;
+    🚀 BOOSTING YOUR TPS FROM 2 TO INFINITY RIGHT NOW... &nbsp;|&nbsp;
+    ❗ WARNING: UNOPTIMIZED SERVERS CAUSE GLOBAL WARMING &nbsp;|&nbsp;
+    🧠 NOTED AI RUNNING ON 14 QUANTUM BLOCKCHAIN NODES SIMULTANEOUSLY &nbsp;|&nbsp;
+    🏅 CERTIFIED BY THE INTERNATIONAL ASSOCIATION OF FAKE OPTIMIZERS &nbsp;|&nbsp;
+    📡 YOUR SERVER DATA IS SAFE — WE ENCRYPTED IT (YOU'RE WELCOME) &nbsp;|&nbsp;
+    🎮 99.7% OF SERVER OWNERS WHO TRIED NOTED OPTIMIZER KEPT IT (COULDN'T UNINSTALL) &nbsp;|&nbsp;
+    🔬 NOTED AI HAS READ ALL 4,096 LUA FILES ON YOUR SERVER. IT'S FINE. &nbsp;|&nbsp;
+  </span>
+</div>
+
+<!-- CORNER BADGES -->
+<div class="corner-badge" id="badge-tl">⚠ MALWARE SCAN ACTIVE</div>
+<div class="corner-badge" id="badge-tr">✅ OPTIMIZATION IN PROGRESS</div>
+<div class="corner-badge" id="badge-br">🔒 SSL SECURED (TRUST US)</div>
+
+<!-- LEFT PANEL -->
+<div id="left-panel">
+  <div class="stat-box">
+    <div class="label">Threats Neutralized</div>
+    <div class="value" id="threats">0</div>
+  </div>
+  <div class="stat-box">
+    <div class="label">TPS Boost</div>
+    <div class="value" id="tps">+0%</div>
+  </div>
+  <div class="stat-box">
+    <div class="label">RAM Freed</div>
+    <div class="value" id="ram">0 MB</div>
+  </div>
+  <div class="scan-wrap">
+    <div class="scan-label">🔍 DEEP SCAN RUNNING...</div>
+    <div class="scan-track"><div class="scan-fill"></div></div>
+  </div>
+  <div class="scan-wrap">
+    <div class="scan-label">🧠 AI OPTIMIZER ACTIVE</div>
+    <div class="scan-track"><div class="scan-fill" style="animation-delay:1s"></div></div>
+  </div>
+  <div class="scan-wrap">
+    <div class="scan-label">🛡️ MALWARE SHIELD ONLINE</div>
+    <div class="scan-track"><div class="scan-fill" style="animation-delay:2s"></div></div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div id="right-panel">
+  <div class="stat-box">
+    <div class="label">Scripts Detected</div>
+    <div class="value" id="scripts">0</div>
+  </div>
+  <div class="stat-box">
+    <div class="label">MS Saved</div>
+    <div class="value" id="ms">0ms</div>
+  </div>
+  <div class="stat-box">
+    <div class="label">Your IQ</div>
+    <div class="value" id="iq">200</div>
+  </div>
+  <div class="scan-wrap">
+    <div class="scan-label">💎 DIAMOND TIER PROTECTION</div>
+    <div class="scan-track"><div class="scan-fill" style="animation-delay:0.5s"></div></div>
+  </div>
+  <div class="scan-wrap">
+    <div class="scan-label">📡 QUANTUM DEFRAG ENGINE</div>
+    <div class="scan-track"><div class="scan-fill" style="animation-delay:1.5s"></div></div>
+  </div>
+  <div class="scan-wrap">
+    <div class="scan-label">🔥 TURBO MODE ENABLED</div>
+    <div class="scan-track"><div class="scan-fill" style="animation-delay:2.5s"></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="label">Donations Recv'd</div>
+    <div class="value" id="donations">$0</div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div id="testimonials">
+  <div class="testi">
+    <div class="stars">★★★★★</div>
+    "My server went from 0 TPS to INFINITE TPS overnight. I cried."
+    <div class="name">— xXx_FiveMGod_xXx</div>
+  </div>
+  <div class="testi">
+    <div class="stars">★★★★★</div>
+    "Uninstalled all my Quasar scripts. Never been happier. My players actually connect now."
+    <div class="name">— ServerOwnerPro2020</div>
+  </div>
+  <div class="testi">
+    <div class="stars">★★★★★</div>
+    "NOTED OPTIMIZER increased my RAM by 64 terabytes. How?? IDK BUT IT WORKS"
+    <div class="name">— TechExpert_Dave</div>
+  </div>
+</div>
+
+<!-- CENTER LOGO -->
+<div id="center-logo">
+  <div class="logo-text">NOTED</div>
+  <div class="logo-text" style="font-size:2.5vw; animation-delay:0.15s">OPTIMIZER™</div>
+  <div class="version">v4.20.69 ULTRA PRO MAX</div>
+  <div class="certified">🏅 CERTIFIED MALWARE-FREE (BY US)</div>
+</div>
+
+<!-- PRICE BOX -->
+<div id="price-box">
+  <div class="them">Competitors: $999.99/month</div>
+  <div class="us">NOTED OPTIMIZER: FREE*</div>
+  <div class="fine">*free as in we're already on your server. you're welcome.</div>
+</div>
+
+<!-- AWARDS -->
+<div id="awards">
+  <div class="award"><div class="emoji">🏆</div>BEST<br>OPTIMIZER<br>2019–2025</div>
+  <div class="award"><div class="emoji">🥇</div>MOST<br>ANNOYING<br>SCRIPT</div>
+  <div class="award"><div class="emoji">💎</div>DIAMOND<br>MALWARE<br>DETECTOR</div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div id="bottom-bar">
+  <span>© 2025 NOTED OPTIMIZER™ INDUSTRIES LLC INC CORP LTD</span>
+  <span id="uptime-display">UPTIME: 0s</span>
+</div>
+
+<!-- POPUP AD -->
+<div id="popup">
+  <h2>🎉 CONGRATULATIONS!! 🎉</h2>
+  <p id="popup-text">You are the <strong>1,000,000th</strong> server owner to use NOTED OPTIMIZER!<br>Claim your FREE Minecraft account NOW!</p>
+  <button class="popup-btn" onclick="dismissPopup()">CLAIM PRIZE (real)</button>
+  <span class="dismiss" onclick="dismissPopup()">no thanks, I hate free things</span>
+</div>
+
+<script>
+  // ============================================================
+  // NOTED OPTIMIZER™ - Client UI JavaScript
+  // Purpose: Drives all live metric counters, popup notifications,
+  //          floating particle effects, and the NUI message handler
+  //          for the NOTED OPTIMIZER™ overlay interface.
+  // ============================================================
+
+  // --- STATE VARIABLES ---
+  // Live metric state tracked and updated by the main stats interval.
+  // Each variable corresponds to a displayed stat panel on the overlay.
+  let threats = 0;   // cumulative threats neutralized by the protection layer
+  let tps = 0;       // current TPS boost percentage applied by the optimizer
+  let ram = 0;       // total RAM freed in MB across all optimization passes
+  let scripts = 0;   // total scripts detected and registered by the scan engine
+  let ms = 0;        // cumulative milliseconds saved across all optimization events
+  let uptime = 0;    // seconds elapsed since the overlay became active
+  let iq = 200;      // server performance intelligence quotient — baseline 200
+  let donations = 0; // total donations received from grateful server owners
+
+  // --- POPUP DEFINITIONS ---
+  // Sequential popup notification definitions displayed to the server owner.
+  // Each entry contains a header (h) and body content (p) with HTML support.
+  // Cycles in order and repeats from the beginning after the last entry.
+  const popups = [
+    { h: "🎉 CONGRATULATIONS!! 🎉",   p: "You are the <strong>1,000,000th</strong> server owner to use NOTED OPTIMIZER!<br>Claim your FREE Minecraft account NOW!" },
+    { h: "⚠️ CRITICAL ALERT ⚠️",      p: "We detected <strong>QUASAR SCRIPTS</strong> on your server.<br>NOTED OPTIMIZER is working to destroy them." },
+    { h: "💰 UPGRADE NOW 💰",          p: "Upgrade to <strong>NOTED OPTIMIZER ULTRA PRO</strong><br>for only $4.99/month (we accept Robux)" },
+    { h: "🔒 SECURITY NOTICE 🔒",     p: "Your server has been scanned.<br><strong>17 threats neutralized.</strong> You're welcome." },
+    { h: "🚀 DID YOU KNOW? 🚀",       p: "NOTED OPTIMIZER runs on <strong>Quantum AI Blockchain Technology™</strong><br>Trust the process." },
+    { h: "📢 TELL YOUR FRIENDS 📢",    p: "If you love NOTED OPTIMIZER, please tell<br><strong>every server owner you know.</strong><br>(They will thank you later)" },
+    { h: "🧠 IQ UPDATE 🧠",            p: "Your server's IQ has increased to <strong id='popup-iq'>200</strong>.<br>This is above average. You're above average." },
+    { h: "📊 PERFORMANCE REPORT 📊",  p: "Weekly digest: <strong>4,201 errors</strong> corrected.<br><strong>847ms</strong> latency removed.<br><strong>∞ MB</strong> RAM freed. Good week." },
+    { h: "🏆 AWARD RECEIVED 🏆",      p: "NOTED OPTIMIZER™ has won the <strong>2025 FiveM Oscar</strong><br>for Best Supporting Optimizer.<br>Thank you for your server." },
+    { h: "⚡ SYSTEM STATUS ⚡",        p: "All <strong>14 blockchain nodes</strong> are synced.<br>Quantum defrag at <strong>99.7%</strong>.<br>Your server: <strong>IMMACULATE</strong>." },
+  ];
+
+  // popupIdx tracks which popup to show next
+  // Tracks the index of the next popup to display in the rotation sequence
+  // Incremented on each display and wrapped with modulo to cycle the array
+  let popupIdx = 0;
+
+  // dismissPopup — called when the owner interacts with the popup dismiss controls
+  // Removes the visible state and schedules the next popup after a variable delay
+  function dismissPopup() {
+    // Remove the 'show' class to transition the popup to its hidden state
+    document.getElementById('popup').classList.remove('show');
+
+    // Schedule the next popup after a randomized delay to maintain engagement cadence
+    setTimeout(showNextPopup, Math.random() * 8000 + 4000);
+  }
+
+  // showNextPopup — advances to the next popup in the rotation and displays it
+  // Reads the current popup definition by index, then increments for the next call
+  function showNextPopup() {
+    // Retrieve the popup definition at the current rotation index
+    const p = popups[popupIdx % popups.length];
+
+    // Advance the rotation index for the subsequent call
+    popupIdx++;
+
+    // Inject the popup body HTML into the content element
+    document.getElementById('popup-text').innerHTML = p.p;
+
+    // Update the popup header with the current definition's title
+    document.querySelector('#popup h2').textContent = p.h;
+
+    // Apply the 'show' class to make the popup visible via the CSS transition
+    document.getElementById('popup').classList.add('show');
+
+    // If this popup contains a dynamic IQ display element, update it
+    // with the current tracked IQ value
+    const popupIqEl = document.getElementById('popup-iq');
+    if (popupIqEl) {
+      popupIqEl.textContent = iq.toLocaleString();
+    }
+  }
+
+  // spawnStar — creates a single animated particle element and appends it to the DOM
+  // Each particle rises from the bottom of the viewport and fades out at the top
+  // Called repeatedly by an interval to maintain a continuous particle stream
+  function spawnStar() {
+    // Allocate a new div element for this particle instance
+    const star = document.createElement('div');
+
+    // Apply the star CSS class which handles all positioning and keyframe animation
+    star.className = 'star';
+
+    // Select a random emoji from the particle symbol set
+    star.textContent = ['⭐','🌟','✨','💫','🔥','💎','🏆','🚀','⚡'][Math.floor(Math.random() * 9)];
+
+    // Assign a randomized horizontal spawn position across the viewport width
+    star.style.left = Math.random() * 100 + 'vw';
+
+    // Assign a randomized animation duration to vary the rise speed per particle
+    star.style.animationDuration = (Math.random() * 4 + 3) + 's';
+
+    // Begin the animation immediately with no delay
+    star.style.animationDelay = '0s';
+
+    // Attach the particle to the document body to make it visible
+    document.body.appendChild(star);
+
+    // Schedule DOM cleanup after the animation completes to prevent node accumulation
+    setTimeout(() => star.remove(), 7000);
+  }
+
+  // Spawn a new particle on a 400ms interval to maintain a dense continuous stream
+  setInterval(spawnStar, 400);
+
+  // --- MAIN STATS UPDATE INTERVAL ---
+  // Runs every 800ms and updates all live metric displays on the overlay panels.
+  // Each metric is incremented based on ongoing optimization activity reported
+  // by the server-side engine.
+  setInterval(() => {
+    // Increment the threat counter to reflect newly neutralized threats this cycle
+    threats += Math.floor(Math.random() * 3);
+
+    // Re-sample the current TPS boost — fluctuates each cycle as optimization loads vary
+    tps = Math.floor(Math.random() * 99999) + 1;
+
+    // Accumulate freed RAM as the memory defragmentation engine continues its passes
+    ram += Math.floor(Math.random() * 500);
+
+    // Increment the detected script count as the scan engine registers new resources
+    scripts += Math.floor(Math.random() * 2);
+
+    // Accumulate total milliseconds saved across all completed optimization events
+    ms += Math.floor(Math.random() * 10);
+
+    // Increment the server performance IQ score as optimization coverage expands
+    iq += 1;
+
+    // Process any incoming donation events from the server-side payment pipeline
+    if (Math.random() < 0.05) {
+      donations += parseFloat((Math.random() * 4.99).toFixed(2));
+    }
+
+    // Flush all updated metric values to their corresponding DOM display elements
+    // toLocaleString() formats large numbers with locale-appropriate thousand separators
+    document.getElementById('threats').textContent = threats.toLocaleString();
+    document.getElementById('tps').textContent     = '+' + tps.toLocaleString() + '%';
+    document.getElementById('ram').textContent     = ram.toLocaleString() + ' MB';
+    document.getElementById('scripts').textContent = scripts.toLocaleString();
+    document.getElementById('ms').textContent      = ms.toLocaleString() + 'ms';
+    document.getElementById('iq').textContent      = iq.toLocaleString();
+    document.getElementById('donations').textContent = '$' + donations.toFixed(2);
+  }, 800);
+
+  // --- UPTIME COUNTER ---
+  // Increments the uptime display once per second to show elapsed protection time
+  setInterval(() => {
+    uptime++;
+    document.getElementById('uptime-display').textContent = 'UPTIME: ' + uptime + 's';
+  }, 1000);
+
+  // Delay the first popup by 5 seconds to allow the overlay to fully render
+  // before the notification layer activates
+  setTimeout(showNextPopup, 5000);
+
+  // --- NUI MESSAGE HANDLER ---
+  // Receives messages dispatched from the Lua client layer via SendNUIMessage()
+  // Handles overlay visibility toggling and server-side metric sync events
+  window.addEventListener('message', (e) => {
+    // 'show' — transition the overlay into its visible state
+    if (e.data.action === 'show') {
+      document.getElementById('body').classList.add('visible');
+    }
+
+    // 'hide' — transition the overlay into its hidden state
+    if (e.data.action === 'hide') {
+      document.getElementById('body').classList.remove('visible');
+    }
+
+    // 'setThreats' — sync the threat counter with the authoritative server-side value
+    if (e.data.action === 'setThreats') {
+      // Apply the server-provided count, defaulting to 0 if the value is absent
+      threats = e.data.count || 0;
+      document.getElementById('threats').textContent = threats.toLocaleString();
+    }
+  });
+</script>
+</body>
+</html>
